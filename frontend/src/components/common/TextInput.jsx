@@ -6,26 +6,41 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import red from "@material-ui/core/colors/red";
+import { red, pink } from "@material-ui/core/colors";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   textField: {
     background: "white",
-    boxShadow: "7px 7px 0px 0px rgba(0,0,0,0.15)",
-    fontStyle: "italic",
+    boxShadow: theme.shadows[7],
+    borderRadius: 0,
   },
-  notchedOutline: {
+  textFieldNoShadow: {
+    background: "white",
+    borderRadius: 0,
+  },
+  whiteOutline: {
     borderWidth: "1px",
     borderColor: "white !important",
   },
-  notchedOutlineRed: {
+  errorOutline: {
     borderWidth: "2px",
     borderColor: `${red[300]} !important`,
+  },
+  errorOutlineOnPrimary: {
+    borderWidth: "2px",
+    borderColor: `${pink[100]} !important`,
   },
   errorText: {
     fontStyle: "italic",
     fontWeight: 500,
     color: red[300],
+    fontSize: "85%",
+    margin: "10px 0 0 0",
+  },
+  errorTextOnPrimary: {
+    fontStyle: "italic",
+    fontWeight: 500,
+    color: pink[100],
     fontSize: "85%",
     margin: "10px 0 0 0",
   },
@@ -39,7 +54,11 @@ const TextInput = ({
   password = false,
   multiline = false,
   onChange,
+  defaultValue,
   name,
+  outline = false,
+  noShadow = false,
+  onPrimaryBackground = false,
 }) => {
   const classes = useStyles();
 
@@ -57,16 +76,20 @@ const TextInput = ({
     (password && (
       <>
         <OutlinedInput
-          className={classes.textField}
+          className={!noShadow ? classes.textField : classes.textFieldNoShadow}
           type={showPassword ? "text" : "password"}
           placeholder={placeholder}
           autoFocus={autoFocus}
           onChange={onChange}
           name={name}
           classes={{
-            notchedOutline: errorText
-              ? classes.notchedOutlineRed
-              : classes.notchedOutline,
+            notchedOutline:
+              !outline &&
+              ((errorText &&
+                (onPrimaryBackground
+                  ? classes.errorOutlineOnPrimary
+                  : classes.errorOutline)) ||
+                classes.whiteOutline),
           }}
           endAdornment={
             <InputAdornment position="end">
@@ -79,30 +102,55 @@ const TextInput = ({
             </InputAdornment>
           }
         />
-        {errorText && <p className={classes.errorText}>{errorText}</p>}
+        {errorText && (
+          <p
+            className={
+              onPrimaryBackground
+                ? classes.errorTextOnPrimary
+                : classes.errorText
+            }
+          >
+            {errorText}
+          </p>
+        )}
       </>
     )) || (
       <>
         <TextField
-          className={classes.textField}
+          className={!noShadow ? classes.textField : classes.textFieldNoShadow}
           placeholder={placeholder}
           variant="outlined"
           multiline={multiline}
           autoFocus={autoFocus}
           onChange={onChange}
           name={name}
+          defaultValue={defaultValue}
           InputProps={{
             startAdornment: startAdornment && (
               <InputAdornment position="start">{startAdornment}</InputAdornment>
             ),
             classes: {
-              notchedOutline: errorText
-                ? classes.notchedOutlineRed
-                : classes.notchedOutline,
+              notchedOutline:
+                !outline &&
+                ((errorText &&
+                  (onPrimaryBackground
+                    ? classes.errorOutlineOnPrimary
+                    : classes.errorOutline)) ||
+                  classes.whiteOutline),
             },
           }}
         />
-        {errorText && <p className={classes.errorText}>{errorText}</p>}
+        {errorText && (
+          <p
+            className={
+              onPrimaryBackground
+                ? classes.errorTextOnPrimary
+                : classes.errorText
+            }
+          >
+            {errorText}
+          </p>
+        )}
       </>
     )
   );

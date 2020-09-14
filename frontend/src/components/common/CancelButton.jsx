@@ -25,6 +25,7 @@ const CancelButton = ({ text, onClick }) => {
             className={classes.button}
             size= {width < 960 ? ("small" ) : "medium"}
             onClick={onClick}
+            fullWidth={true}
         >
             {text}
         </Button>

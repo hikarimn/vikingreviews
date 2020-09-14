@@ -3,6 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
+import ScrollableGrid from "./common/ScrollableGrid";
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -28,10 +29,6 @@ const useStyles = makeStyles((theme) => ({
   },
   scroll: {
     height: "80%",
-    margin: 0,
-    width: "100%",
-    overflow: "scroll",
-    wrap: "nowrap",
   },
 }));
 
@@ -71,15 +68,15 @@ const SlideInDrawer = ({ onClose, content }) => {
         alignItems="center"
       >
         <Grid
-          // className={classes.scroll}
+          className={classes.scroll}
           item
           xs={10}
-          sm={6}
+          sm={8}
           container
           direction="column"
           justify="center"
         >
-          {content}
+          <ScrollableGrid>{content}</ScrollableGrid>
         </Grid>
       </Grid>
     </>

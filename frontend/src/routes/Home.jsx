@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textField: {
     background: "white",
-    boxShadow: "5px 5px 0px 0px rgba(0,0,0,0.15)",
+    boxShadow: theme.shadows[5],
     fontStyle: "italic",
   },
   p: {
@@ -27,7 +27,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Home = () => {
+const Home = ({
+  handleSearchChange,
+  searchValue,
+  updateSearchChoices,
+  searchChoices,
+  ...other
+}) => {
+  const handleClick = () => {
+    if (searchValue.type.toLowerCase() === "course") {
+      other.history.push({
+        pathname: `/courses/${searchValue._id}`,
+        state: { detail: searchValue },
+      });
+    } else if (searchValue.type.toLowerCase() === "department") {
+      other.history.push({
+        pathname: `/departments/${searchValue._id}`,
+        state: { detail: searchValue },
+      });
+    }
+  };
+
   const classes = useStyles();
   return (
     <Grid
@@ -49,11 +69,17 @@ const Home = () => {
         <div className={classes.header}>
           <Logo />
         </div>
-        <SearchBar home={true} />
+        <SearchBar
+          home
+          value={searchValue}
+          onChange={handleSearchChange}
+          update={updateSearchChoices}
+          choices={searchChoices}
+        />
 
         <p className={classes.p}>...or type "All" to compare all courses!</p>
         <Grid container type="row" justify="center">
-          <StyledButton text="Search" />
+          <StyledButton text="Search" onClick={handleClick} />
         </Grid>
       </Grid>
     </Grid>

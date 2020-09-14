@@ -6,7 +6,16 @@ import * as serviceWorker from "./serviceWorker";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { BrowserRouter } from "react-router-dom";
 
-const theme = createMuiTheme({
+const themeObject = {
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 400,
+      md: 960,
+      lg: 1280,
+      xl: 1920,
+    },
+  },
   palette: {
     primary: {
       main: "#59b4fe",
@@ -19,11 +28,29 @@ const theme = createMuiTheme({
   },
   typography: {
     fontFamily: "Inter",
-    allVariants: {
-      textShadow: "5px 5px 0px 0px rgba(0,0,0,0.15)",
+  },
+  overrides: {
+    MuiTypography: {
+      h2: {
+        textShadow: "4px 4px 0px rgba(0,0,0,0.15)",
+      },
+      h3: {
+        textShadow: "4px 4px 0px rgba(0,0,0,0.15)",
+      },
     },
   },
-});
+};
+
+themeObject.shadows = ["none"];
+Array.from(Array(24).keys(), (i) => i + 1).map(
+  (i) =>
+    (themeObject.shadows = [
+      ...themeObject.shadows,
+      `${i}px ${i}px 0px rgba(0,0,0,0.15)`,
+    ])
+);
+
+const theme = createMuiTheme(themeObject);
 
 ReactDOM.render(
   <React.StrictMode>

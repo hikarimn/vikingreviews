@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-
-const URI = "http://localhost:3000";
+import config from "./config.json";
 
 class Departments extends Component {
   state = {
@@ -9,7 +8,7 @@ class Departments extends Component {
   };
 
   async componentDidMount() {
-    const departments = await axios.get(URI + "/api/departments");
+    const departments = await axios.get(config.uri + "/api/departments");
     this.setState({ departments: departments.data });
   }
 

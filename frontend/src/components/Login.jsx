@@ -1,69 +1,47 @@
 import React, { Component } from "react";
 import Grid from "@material-ui/core/Grid";
-import Joi from "joi";
 import TextInput from "./common/TextInput";
 import StyledButton from "./common/StyledButton";
 import DrawerHeader from "./common/DrawerHeader";
+import auth from "../services/authService";
+import { loginSchema } from "../utils/validationSchemas";
+import * as validation from "../utils/validation";
+import StyledParagraph from "./common/StyledParagraph";
+import SignUp from "./SignUp";
 
 class Login extends Component {
-  state = { data: { email: "", password: "" }, errors: {} };
+  constructor(props) {
+    super(props);
+    this.state = { data: { email: "", password: "" }, errors: {} };
+    this.schema = loginSchema;
+    this.validate = validation.validate.bind(this);
+    this.validateProperty = validation.validateProperty.bind(this);
+    this.handleChange = validation.handleChange.bind(this);
+  }
 
-  schema = Joi.object({
-    email: Joi.string()
-      .regex(/^([a-zA-Z0-9\.]+)@lawrence.edu$/)
-      .messages({
-        "string.empty": "Email cannot be left empty.",
-        "string.pattern.base":
-          "Email must be a Lawrence account and can contain only alphanumeric characters, periods, and underscores.",
-      }),
-    password: Joi.string().min(5).max(32).messages({
-      "string.empty": "Password cannot be left empty.",
-      "string.min": "Password should have a minimum length of 5.",
-      "string.max": "Password should have a maximum length of 32.",
-    }),
-  });
-
-  handleSubmit = () => {
-    const errors = this.validate();
-    console.log(errors);
-    this.setState({ errors });
-  };
-
-  validate = () => {
-    const options = { abortEarly: false };
-    const { error } = this.schema.validate(this.state.data, options);
-    if (!error) return null;
-    const errors = {};
-    error.details.map((item) => {
-      errors[item.path[0]] = item.message;
-    });
-    return errors;
-  };
-
-  validateProperty = ({ name, value }) => {
-    const obj = { [name]: value };
-    const { error } = this.schema.validate(obj);
-    return error ? error.details[0].message : null;
-  };
-
-  handleChange = ({ currentTarget: input }) => {
-    const errors = { ...this.state.errors };
-    const errorMessage = this.validateProperty(input);
-    if (errorMessage) errors[input.name] = errorMessage;
-    else delete errors[input.name];
-
-    const data = { ...this.state.data };
-    data[input.name] = input.value;
-
-    console.log(data, errorMessage);
-    this.setState({ data, errors });
+  handleSubmit = async (location) => {
+    try {
+      const { data } = this.state;
+      await auth.login(data.email, data.password);
+      if (location) window.location = location.pathname;
+      else window.location = "/";
+    } catch (ex) {
+      if (ex.response && ex.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.email = ex.response.data;
+        this.setState({ errors });
+      }
+    }
   };
 
   render() {
     const { errors } = this.state;
+    const { location, switchTo, ...other } = this.props;
+    console.log("Login location", location);
+    console.log("Login other", other);
     return (
       <>
-        <DrawerHeader text="Login" />
+        <DrawerHeader>Login</DrawerHeader>
         <Grid item container direction="column" justify="center" spacing={2}>
           <Grid item container direction="column" justify="center">
             <TextInput
@@ -89,32 +67,19 @@ class Login extends Component {
             <StyledButton
               text="Log in"
               disabled={this.validate() ? true : false}
-              onClick={this.handleSubmit}
+              onClick={() => this.handleSubmit(location)}
             />
           </Grid>
+          <StyledParagraph
+            onClick={() => switchTo(SignUp, other)}
+            textAlign="center"
+          >
+            Don't have an account yet? Click here to sign up!
+          </StyledParagraph>
         </Grid>
       </>
     );
   }
 }
-
-// const Login = () => {
-//   return (
-//     <>
-//       <DrawerHeader text="Login" />
-//       <Grid container direction="column" justify="center" spacing={2}>
-//         <Grid item container direction="column" justify="center">
-//           <TextInput placeholder="Email" autoFocus />
-//         </Grid>
-//         <Grid item container direction="column" justify="center">
-//           <TextInput placeholder="Password" password />
-//         </Grid>
-//         <Grid item container direction="row" justify="center">
-//           <StyledButton text="Log in" />
-//         </Grid>
-//       </Grid>
-//     </>
-//   );
-// };
 
 export default Login;

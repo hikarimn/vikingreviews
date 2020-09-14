@@ -21,10 +21,12 @@ const AddReviewButton = ({ text, onClick }) => {
     return (
         <Button
             variant="contained"
-            color="secondary"
+            color="primary"
             className={classes.button}
-            size= {width < 960 ? ("small" ) : "medium"}
+            size="large"
+            // size= {width < 960 ? ("small" ) : "medium"}
             onClick={onClick}
+            fullWidth={true}
         >
             {text}
         </Button>
